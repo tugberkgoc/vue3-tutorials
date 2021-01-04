@@ -3,18 +3,50 @@
     <h2>{{ user.name }}</h2>
     <h3>{{ user.age }}</h3>
 
-    <button @click="changeAge">Change Age</button>
-
     <h2>{{ name }}</h2>
     <h3>{{ age }}</h3>
+
+    <button @click="changeAge">Change Age</button>
+
+    <h3>{{ fullname }}</h3>
+    <input type="text" placeholder="First Name" @input="setFirstName" />
+    <!-- One-way -->
+    <input type="text" placeholder="Last Name" @input="setLastName" />
+    <!-- One-way -->
+
+    <h3>{{ fullname }}</h3>
+    <input type="text" placeholder="First Name" v-model="firstname" />
+    <!-- One-way -->
+    <input type="text" placeholder="Last Name" v-model="lastname" />
+    <!-- One-way -->
   </section>
 </template>
 
 <script>
-import { ref, reactive, isRef, isReactive, toRefs } from 'vue'
+import { ref, reactive, isRef, isReactive, toRefs, computed, watch } from 'vue'
 
 export default {
   setup () {
+    const firstname = ref('')
+    const lastname = ref('')
+
+    const fullname = computed(() => {
+      return firstname.value + ' ' + lastname.value
+    })
+
+    watch(firstname, (newValue, oldValue) => {
+      console.log(`Old firstname: ${oldValue}`, `New firstname: ${newValue}`)
+    })
+
+    watch([firstname, lastname], function (newValues, oldValues) {
+      if (oldValues[1] !== newValues[1]) {
+        console.log(
+          `Old lastname: ${oldValues[1]}`,
+          `New lastname: ${newValues[1]}`
+        )
+      }
+    })
+
     const userRef = ref({
       name: 'Tugberk',
       age: 23
@@ -24,6 +56,20 @@ export default {
       name: 'Tugberk',
       age: 23
     })
+
+    watch(
+      () => userRef.value.age,
+      function (newValue) {
+        console.log(newValue)
+      }
+    )
+
+    watch(
+      () => userReactive.age,
+      function (newValue) {
+        console.log(newValue)
+      }
+    )
 
     console.log(userRef, userReactive)
 
@@ -44,16 +90,34 @@ export default {
     // methods
     const changeAge = () => {
       userReactive.age = 100
+
+      userRef.value.age = 100
+    }
+
+    const setFirstName = event => {
+      firstname.value = event.target.value
+    }
+
+    const setLastName = event => {
+      lastname.value = event.target.value
     }
 
     return {
-      user: userReactive,
-      userRef,
+      user: userReactive, // REACTIVE
+      userRef, // REF
 
-      name: userRefs.name, // REF : reflected (toRefs)
-      age: userRefs.age, // REF : reflected (toRefs),
+      name: userRefs.name, // toRefs(userReactive)
+      age: userRefs.age, // toRefs(userReactive)
 
-      changeAge
+      changeAge,
+
+      fullname, // COMPUTED
+
+      setFirstName, // One-way
+      setLastName, // One-way
+
+      firstname, // Two-way
+      lastname // Two-way
     }
   }
 }
