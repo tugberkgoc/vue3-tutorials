@@ -1,5 +1,11 @@
 <template>
   <section class="container">
+    <div class="container">
+      <h1>BEGIN COMPONENT</h1>
+      <user-data :firstname="firstname" :lastname="lastname"></user-data>
+      <h1>END COMPONENT</h1>
+    </div>
+
     <h2>{{ user.name }}</h2>
     <h3>{{ user.age }}</h3>
 
@@ -16,16 +22,33 @@
 
     <h3>{{ fullname }}</h3>
     <input type="text" placeholder="First Name" v-model="firstname" />
-    <!-- One-way -->
+    <!-- Two-way -->
     <input type="text" placeholder="Last Name" v-model="lastname" />
-    <!-- One-way -->
+    <!-- Two-way -->
+
+    <h3>{{ teamName }}</h3>
+    <input type="text" placeholder="Team Name" ref="teamNameInput" />
+    <button @click="setTeamName">Set Team Name</button>
   </section>
 </template>
 
 <script>
-import { ref, reactive, isRef, isReactive, toRefs, computed, watch } from 'vue'
+import {
+  ref,
+  reactive,
+  isRef,
+  isReactive,
+  toRefs,
+  computed,
+  watch,
+  provide
+} from 'vue'
+import UserData from './components/UserData'
 
 export default {
+  components: {
+    UserData
+  },
   setup () {
     const firstname = ref('')
     const lastname = ref('')
@@ -56,6 +79,8 @@ export default {
       name: 'Tugberk',
       age: 23
     })
+
+    provide('user', userReactive) // Provide & Inject
 
     watch(
       () => userRef.value.age,
@@ -102,6 +127,12 @@ export default {
       lastname.value = event.target.value
     }
 
+    const teamName = ref('')
+    const teamNameInput = ref(null)
+    const setTeamName = () => {
+      teamName.value = teamNameInput.value.value
+    }
+
     return {
       user: userReactive, // REACTIVE
       userRef, // REF
@@ -117,7 +148,11 @@ export default {
       setLastName, // One-way
 
       firstname, // Two-way
-      lastname // Two-way
+      lastname, // Two-way
+
+      teamName, // ref
+      teamNameInput, // ref
+      setTeamName // ref
     }
   }
 }

@@ -12,6 +12,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'space-before-function-paren': 0,
     'comma-dangle': 0,
-    'vue/no-mutating-props': 0
+    'vue/no-mutating-props': 0,
+    'vue/no-multiple-template-root': 0
   }
 }
